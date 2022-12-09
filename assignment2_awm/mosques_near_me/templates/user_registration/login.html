@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{% block title %}User Login{% endblock %}</title>
+</head>
+<body>
+     {% block content %}
+         {% load crispy_forms_tags %}
+         <h2 class="text-center m-3">Log In</h2>
+            <div class="container py-5">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ login_form|crispy }}
+                    <button class="btn btn-primary" type="submit">Log In</button>
+                </form>
+                <p class="text-center">Don't have an account? <a href="{% url 'mosques_near_me:register_user' %}">Sign Up Now</a>.</p>
+            </div>
+     {% endblock %}
+</body>
+</html>

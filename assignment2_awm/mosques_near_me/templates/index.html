@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{% block title %}Mosques Near Me{% endblock %}</title>
+</head>
+<body>
+    {% block content %}
+        <h1 class="text-center">Mosques Near Me</h1>
+        <div class="index-container">
+{#            <img src="{% static 'images/map-img.png' %}" alt="map image" id="index-icon"/>#}
+        </div>
+
+        <div class="index-btn-container">
+            <a href="{% url 'mosques_near_me:login' %}" class="ml-3 btn btn-secondary btn-lg active" role="button" aria-pressed="true">Login</a>
+            <a href="{% url 'mosques_near_me:register_user' %}" class="ml-3 btn btn-secondary btn-lg active" role="button" aria-pressed="true">Register</a>
+        </div>
+
+    {% endblock %}
+</body>
+</html>
