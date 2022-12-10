@@ -7,7 +7,7 @@ from django.contrib.gis.geos import Point, Polygon
 from django.http import JsonResponse
 from django.shortcuts import redirect
 
-from .models import UserProfile
+from .models import UserProfile, Mosques
 from .forms import RegisterUserForm
 from django.shortcuts import render
 import overpy
@@ -174,5 +174,22 @@ def find_mosque(request):
     except Exception as e:
         return JsonResponse({"message": f"Error: {e}."}, status=400)
 
-# return JsonResponse({"message": f"Mosque found! {len(result.nodes)}"}, status=200)
+
+
+@login_required
+def addFavouriteMosque(request):
+
+    try:
+        mosque_name = request.POST.get("mosqueName", None)
+        print("Mosque: ", mosque_name)
+        user = request.user
+
+        favourite_mosque = Mosques(mosque_name=mosque_name, mosque_goer=user)
+        favourite_mosque.save()
+        update_msg = f'{mosque_name} has been added to your list of favourite mosques'
+
+        return JsonResponse({"message": update_msg}, status=200)
+
+    except Exception as e:
+        return JsonResponse({"Error": f"No mosque found near your area {e}"}, status=400)
 

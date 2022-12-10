@@ -33,3 +33,10 @@ class UserProfile(models.Model):
     email = models.CharField(max_length=50, null=True)
     user_location = models.PointField(null=True)
     # favourite_mosque = models.CharField(max_length=50, null=True)
+
+
+class Mosques(models.Model):
+    # location = models.CharField(max_length=100, null=True)
+    mosque_goer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    mosque_name = models.CharField(max_length=100, null=True)
+

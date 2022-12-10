@@ -51,7 +51,7 @@
 
     {% block javascript %}
         <script>
-
+            let mosque_name = "";
             map = L.map('map', {doubleClickZoom: false}).locate({setView: true, maxZoom: 16});
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -158,9 +158,9 @@
 
                         pointToLayer: function (feature, latlng) {
                             let marker = L.circleMarker(latlng, markerStyle);
-
-                            marker.bindPopup("Mosque: " + feature.properties.name +
-                            '<br/><button id="add-favs" class="btn btn-primary">Add to Favourites</button>')
+                            mosque_name = feature.properties.name;
+                            marker.bindPopup("<h6>Mosque: </h6>" + feature.properties.name +
+                            '<br/><button id="add-favs" class="btn btn-primary" onclick=addToFavourites(mosque_name) type="submit">Add to Favourites</button>')
                             return marker
                         }
                     }).addTo(map);
@@ -177,8 +177,35 @@
                 });
 
             }
+
+            function addToFavourites(mosque_name) {
+
+                console.log("inside addToFavourites() " + mosque_name);
+                let csrftoken = getCookie('csrftoken');
+
+                $.ajax({
+                    type: 'POST',
+                    headers: {
+
+                        'X-CSRFToken': csrftoken
+                    },
+                    url: '{% url 'mosques_near_me:favouriteMosque' %}',
+                    data: {
+
+                        mosqueName: mosque_name
+                    }
+                }).done(function (data, status, xhr) {
+                    console.log(data["message"])
+
+                }).fail(function (xhr, status, error) {
+                    console.log(error);
+
+                }).always(function () {
+                    console.log("addToFavourites() finished");
+                });
+
+            }
         </script>
-        <script src="{% static 'scripts/awm.js' %}"></script>
     {% endblock %}
 </body>
 </html>
