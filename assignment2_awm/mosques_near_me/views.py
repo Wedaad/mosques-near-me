@@ -1,12 +1,16 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, Polygon
 from django.http import JsonResponse
 from django.shortcuts import redirect
+
 from .models import UserProfile
 from .forms import RegisterUserForm
 from django.shortcuts import render
+import overpy
 
 
 def user_login(request):
@@ -20,11 +24,11 @@ def user_login(request):
 
             if user is not None:
                 login(request, user)
-                return redirect("/menu")
+                return redirect("mosques_near_me:menu")
             else:
-                return redirect('/')
+                redirect("mosques_near_me:home")
         else:
-            return redirect('/')
+            redirect("mosques_near_me:home")
     else:
         form = AuthenticationForm()
         return render(request=request, template_name="user_registration/login.html", context={"login_form": form})
@@ -42,17 +46,18 @@ def register_user(request):
             form.save()
             new_profile = UserProfile(user=new_user, username=username, email=email)
             new_profile.save()
-            return redirect("/register_success")
+            return redirect("mosques_near_me:register_user")
         else:
-            return redirect("/")
+            return redirect("mosques_near_me:home")
     else:
         form = RegisterUserForm()
     return render(request=request, template_name="user_registration/register.html", context={"signup_form": form})
 
 
-def user_logout(request):
+@login_required
+def logout_request(request):
     logout(request)
-    return redirect("/")
+    return redirect("mosques_near_me:home")
 
 
 @login_required
@@ -76,3 +81,99 @@ def update_location(request):
         return JsonResponse({"message": update_msg}, status=200)
     except:
         return JsonResponse({"Error: ": "No Location found"}, status=400)
+
+@login_required
+def find_mosque(request):
+    try:
+        api = overpy.Overpass()
+        bounding_box = request.POST.get("bbox", None)
+        print("BBOX: ", bounding_box )
+        if bounding_box:
+            bbox = bounding_box.split(",")
+
+            shuffled_bbox = [bbox[1], bbox[0], bbox[3], bbox[2]]
+            mod_boundingbox = [float(item) for item in shuffled_bbox]
+            bounding_box = mod_boundingbox
+        print(bounding_box)
+
+        result = api.query(f"""
+        [out:json];
+        (
+            node["amenity"="place_of_worship"]["religion"="muslim"]{tuple(bounding_box)};
+            way["amenity"="place_of_worship"]["religion"="muslim"]{tuple(bounding_box)};
+            relation["amenity"="place_of_worship"]["religion"="muslim"]{tuple(bounding_box)};
+     
+        );
+        out body;
+        >;
+        out skel qt;
+        """)
+
+        # the amount of nodes (mosques) returned
+        len(result.nodes)
+        print("NODES: ", len(result.nodes))
+
+        # geojson = {"type": "FeatureCollection", "features": []}
+
+
+        geojson_result = {
+
+            "type": "FeatureCollection",
+            "features": [],
+        }
+
+        nodes_in_way = []
+
+        for way in result.ways:
+            geojson_feature = {
+
+                "type": "Feature",
+                "id": "",
+                "geometry": "",
+                "properties": {}
+            }
+
+            poly = []
+            for node in way.nodes:
+                nodes_in_way.append(node.id)
+                poly.append([float(node.lon), float(node.lat)])
+
+            try:
+                poly = Polygon(poly)
+            except:
+                continue
+
+            geojson_feature["id"] = f"way_{way.id}"
+            geojson_feature["geometry"] = json.loads(poly.centroid.geojson)
+            geojson_feature["properties"] = {}
+            for k, v in way.tags.items():
+                geojson_feature["properties"][k] = v
+
+            geojson_result["features"].append(geojson_feature)
+
+            for node in result.nodes:
+                if node.id in nodes_in_way:
+                    continue
+
+                geojson_feature = {
+                    "type": "Feature",
+                    "id": "",
+                    "geometry": "",
+                    "properties": {}
+                }
+
+                point = Point([float(node.lon), float(node.lat)])
+                geojson_feature["id"] = f"node_{node.id}"
+                geojson_feature["geometry"] = json.loads(point.geojson)
+                geojson_feature["properties"] = {}
+                for k, v in node.tags.items():
+                    geojson_feature["properties"][k] = v
+
+                geojson_result["features"].append(geojson_feature)
+
+                return JsonResponse(geojson_result, status=200)
+    except Exception as e:
+        return JsonResponse({"message": f"Error: {e}."}, status=400)
+
+# return JsonResponse({"message": f"Mosque found! {len(result.nodes)}"}, status=200)
+

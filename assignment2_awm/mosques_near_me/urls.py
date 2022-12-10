@@ -15,5 +15,6 @@ urlpatterns = [
     path('map/', TemplateView.as_view(template_name='view_map.html'), name='map'),
     path('menu/', TemplateView.as_view(template_name='user_menu.html'), name='menu'),
     path('update/', views.update_location, name="update_location"),
+    path('findmosques/', views.find_mosque, name="findmosques")
 
 ]

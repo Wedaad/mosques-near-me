@@ -39,6 +39,7 @@
 
     {% block content %}
         {% load leaflet_tags %}
+
         <h3 class="text-center m-3">Your Location</h3>
 
         <form method="post" action="{% url 'mosques_near_me:update_location' %}">
@@ -56,34 +57,24 @@
                 maxZoom: 19,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
 
-            map.locate({setView: true, maxZoom: 30});
-
             function onLocationFound(e) {
 
                 let radius = e.accuracy;
                 let lat = e.latlng.lat;
                 let long  = e.latlng.lng;
-                let location = lat + ", " + long;
+                let location = e.latlng.lat + ", " + e.latlng.lng;
 
                 L.marker(e.latlng).addTo(map)
-                .bindPopup("Location Found.\n\nLat: " + lat + ", Long: " + long +
-                "\nUpdating database with location").openPopup();
+                .bindPopup("Your Location: \n\nLat: " + lat + ", Long: " + long).openPopup();
 
                  L.circle(e.latlng, radius).addTo(map);
 
                 {#console.log(lat + " " + long);#}
                 updateLocation(location);
-
+                findMosque();
             }
 
-            function onLocationError(e) {
-                alert(e.message);
-            }
-
-            map.on('locationerror', onLocationError);
             map.on('locationfound', onLocationFound);
-
-            map.locate({setView: true, maxZoom: 16});
 
             function getCookie(name) {
                 let cookieValue = null;
@@ -119,15 +110,70 @@
                     }
                 }).done(function (data, status, xhr) {
                     console.log(data["message"])
-                    let originalMsg = $(".toast-body").html();
-                    $(".toast-body").html(originalMsg + "<br/>Updateddatabase<br/>" + data["message"]);
+                    {#let originalMsg = $(".toast-body").html();#}
+                    {#$(".toast-body").html(originalMsg + "<br/>Updateddatabase<br/>" + data["message"]);#}
                 }).fail(function (xhr, status, error) {
                     console.log(error);
-                    let originalMsg = $(".toast-body").html();
-                    $(".toast-body").html(originalMsg + "<br/>" + error);
+                    {#let originalMsg = $(".toast-body").html();#}
+                    {#$(".toast-body").html(originalMsg + "<br/>" + error);#}
                 }).always(function () {
                     console.log("updateLocation() finished");
                     $(".toast").toast('show');
+                });
+
+            }
+
+            function findMosque() {
+                console.log("In findMosque(): ");
+                let csrftoken = getCookie('csrftoken');
+
+                let bbox = map.getBounds().toBBoxString()
+                console.log("bbox: " + bbox);
+
+                $.ajax({
+                    type: "POST",
+                    url: '{% url 'mosques_near_me:findmosques' %}',
+                    headers: {
+
+                        'X-CSRFToken': csrftoken
+                    },
+                    data: {
+
+                        bbox: map.getBounds().toBBoxString()
+                    }
+                }).done(function (data, status, xhr) {
+
+                    console.log(data);
+                    // Handle GeoJSON response from the server.
+                    let markerStyle = {
+                        radius: 20,
+                        fillColor: "purple",
+                        color: "purple",
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }
+
+                    let geoJsonLayer = L.geoJson(data, {
+
+                        pointToLayer: function (feature, latlng) {
+                            let marker = L.circleMarker(latlng, markerStyle);
+
+                            marker.bindPopup("Mosque: " + feature.properties.name +
+                            '<br/><button id="add-favs">Add to Favourites</button>')
+                            return marker
+                        }
+                    }).addTo(map);
+
+                    // Add the GeoJSON layer to the cluster.
+                    map.addLayer(geoJsonLayer);
+
+                }).fail(function (xhr, status, error) {
+                    var message = "OSM Overpass query failed.<br/>";
+                    console.log("Status: " + xhr.status + " " + xhr.responseText);
+                    {#showOkAlert(message);#}
+                }).always(function () {
+                    {#toggleCentredSpinner("hide");#}
                 });
 
             }
