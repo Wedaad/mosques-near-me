@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Successful Registration{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    {% block content %}
+        <div class="reg-success-container">
+{#            <img src="{% static 'images/reg-success.png' %}" alt="green tick in a circle" id="reg-success-icon">#}
+            <p class="text-center m-3">You have successfully registered as a new user.
+                Login now to start using the locator web app</p>
+            <a href="{% url 'mosques_near_me:login' %}" class="btn btn-lg btn-outline-dark" role="button" aria-pressed="true">Login Here</a>
+        </div>
+    {% endblock %}
+</body>
+</html>

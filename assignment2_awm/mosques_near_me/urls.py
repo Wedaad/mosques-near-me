@@ -11,5 +11,9 @@ urlpatterns = [
     path('register/', views.register_user, name='register_user'),
     path('login/', views.user_login, name='login'),
     path('', TemplateView.as_view(template_name='index.html'), name="home"),
+    path('logout/', TemplateView.as_view(template_name='user_registration/logout.html'), name='logout'),
+    path('map/', TemplateView.as_view(template_name='view_map.html'), name='map'),
+    path('menu/', TemplateView.as_view(template_name='user_menu.html'), name='menu'),
+    path('update/', views.update_location, name="update_location"),
 
 ]

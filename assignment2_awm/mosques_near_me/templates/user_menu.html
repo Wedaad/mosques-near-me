@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{% block title %}User Logout{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    {% block navbar %}
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+      <ul class="navbar-nav mr-auto">
+         {% if user.is_authenticated %}
+          <a class="navbar-brand" href="#">AWM Locator App</a>
+             <li class="nav-item">
+                 <a class="nav-link" href="{% url 'mosques_near_me:map' %}">View Map</a>
+             </li>
+             </ul>
+             <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                     <a class="nav-link disabled" href="#" >Hello {{user.username}}!</a>
+                </li>
+
+                 <li class="nav-item">
+                     <a class="nav-link" href="{% url 'mosques_near_me:logout' %}">Log Out</a>
+                 </li>
+             </ul>
+         {% else %}
+        <ul>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'mosques_near_me:login' %}">Login</a>
+             </li>
+         {% endif %}
+      </ul>
+    </nav>
+    {% endblock %}
+
+    {% block content %}
+        <h2 class="text-center m-3">Locator App Main Menu</h2>
+        <p class="msg text-center">Welcome, {{user.username}}</p>
+
+        <div class="div-container">
+            <div class="view-map-div">
+{#                <img src="{% static 'images/location-marker.jpg' %}" alt="locator marker" id="location-icon"/>#}
+                <p class="msg">View map and get your current location!</p>
+                <a href="{% url 'mosques_near_me:map' %}" class="btn btn-lg btn-outline-success" role="button" aria-pressed="true">Get Current Location</a>
+            </div>
+        </div>
+    {% endblock content %}
+
+</body>
+</html>

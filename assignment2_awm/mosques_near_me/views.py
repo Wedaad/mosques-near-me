@@ -1,5 +1,8 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.gis.geos import Point
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from .models import UserProfile
 from .forms import RegisterUserForm
@@ -45,3 +48,31 @@ def register_user(request):
     else:
         form = RegisterUserForm()
     return render(request=request, template_name="user_registration/register.html", context={"signup_form": form})
+
+
+def user_logout(request):
+    logout(request)
+    return redirect("/")
+
+
+@login_required
+def update_location(request):
+    current_location = request.POST.get("userlocation", None)
+    if not current_location:
+        return JsonResponse({"message": "No location found."}, status=400)
+
+    try:
+        profile = request.user.userprofile
+
+        if not profile:
+            raise ValueError("Can't get user profile")
+
+        coordinates = [float(coordinate) for coordinate in current_location.split(',')]
+        profile.user_location = Point(coordinates, srid=4326)
+        profile.save()
+
+        update_msg = f'Update current location for {request.user.username} to {coordinates}'
+
+        return JsonResponse({"message": update_msg}, status=200)
+    except:
+        return JsonResponse({"Error: ": "No Location found"}, status=400)

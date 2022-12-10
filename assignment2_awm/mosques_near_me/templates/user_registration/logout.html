@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{% block title %}User Logout{% endblock %}</title>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+      <ul class="navbar-nav mr-auto">
+         {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="#">Welcome, {{user.username}}</a>
+            </li>
+         {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'login' %}">Login</a>
+             </li>
+         {% endif %}
+      </ul>
+     </nav>
+
+    {% block content %}
+            <div class="container m-3">
+                <h4>Logging User out...</h4>
+                <p>Are you sure you want to logout?</p>
+
+                <div class="d-flex justify-content-start">
+                    <p class="m-2"><a href="{% url 'mosques_near_me:logout' %}">Logout</a></p>
+{#                    <p class="m-2"><a href="{% url 'menu' %}">Go back to menu</a></p>#}
+                </div>
+            </div>
+
+    {% endblock %}
+</body>
+</html>
