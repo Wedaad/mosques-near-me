@@ -87,7 +87,7 @@ def find_mosque(request):
     try:
         api = overpy.Overpass()
         bounding_box = request.POST.get("bbox", None)
-        print("BBOX: ", bounding_box )
+        print("BBOX: ", bounding_box)
         if bounding_box:
             bbox = bounding_box.split(",")
 
@@ -110,11 +110,10 @@ def find_mosque(request):
         """)
 
         # the amount of nodes (mosques) returned
-        len(result.nodes)
+        if len(result.nodes) == 0:
+            return JsonResponse({"message": "There are no mosques near your location"})
+
         print("NODES: ", len(result.nodes))
-
-        # geojson = {"type": "FeatureCollection", "features": []}
-
 
         geojson_result = {
 

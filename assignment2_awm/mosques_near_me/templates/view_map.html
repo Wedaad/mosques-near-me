@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="{% static 'style.css' %}">
@@ -160,7 +160,7 @@
                             let marker = L.circleMarker(latlng, markerStyle);
 
                             marker.bindPopup("Mosque: " + feature.properties.name +
-                            '<br/><button id="add-favs">Add to Favourites</button>')
+                            '<br/><button id="add-favs" class="btn btn-primary">Add to Favourites</button>')
                             return marker
                         }
                     }).addTo(map);
@@ -178,6 +178,7 @@
 
             }
         </script>
+        <script src="{% static 'scripts/awm.js' %}"></script>
     {% endblock %}
 </body>
 </html>
