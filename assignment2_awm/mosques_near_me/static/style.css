@@ -51,6 +51,23 @@ body {
     flex-direction: column;
 }
 
+.profile-container {
+    display: flex;
+    align-items: stretch;
+}
+
+.profile-div {
+
+    justify-content: flex-start;
+}
+
+#profile-icon {
+
+    width: 400px;
+    height: 500px;
+
+}
+
 .reg-success-container {
     padding: 1rem;
     display: flex;

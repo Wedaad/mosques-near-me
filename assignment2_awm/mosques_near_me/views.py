@@ -193,3 +193,9 @@ def addFavouriteMosque(request):
     except Exception as e:
         return JsonResponse({"Error": f"No mosque found near your area {e}"}, status=400)
 
+
+
+def getFavouriteMosque(request):
+    if request.method == "GET":
+        favourite_mosque = Mosques.objects.filter(mosque_goer=request.user)
+        return render(request=request, template_name="user_profile.html", context={"favourite_mosques": favourite_mosque})

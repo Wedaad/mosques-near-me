@@ -3,12 +3,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>{% block title %}User Logout{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <meta charset="UTF-8">
+    <title>User Profile</title>
 </head>
 <body>
-    {% block navbar %}
+{% block navbar %}
     <nav class="navbar navbar-expand-md bg-dark navbar-dark">
       <ul class="navbar-nav mr-auto">
          {% if user.is_authenticated %}
@@ -37,23 +36,26 @@
     {% endblock %}
 
     {% block content %}
-        <h2 class="text-center m-3">Find a Mosque Near You - Main Menu</h2>
-        <p class="msg text-center">Welcome, {{user.username}}</p>
+        <h2 class="text-center m-3">Your Profile</h2>
 
         <div class="div-container">
             <div class="menu-divs">
-{#                <img src="{% static 'images/location-marker.jpg' %}" alt="locator marker" id="location-icon"/>#}
-                <p class="msg">View map and get your current location!</p>
-                <a href="{% url 'mosques_near_me:map' %}" class="btn btn-lg btn-outline-success" role="button" aria-pressed="true">Get Current Location</a>
+               <img src="{% static 'images/profile.png' %}" alt="profile picture place holder image" id="profile-icon"/>
+                <p class="msg">Your Profile</p>
+                <p class="msg">Username: {{user.username}}</p>
             </div>
 
-            <div class="menu-divs">
-{#                <img src="{% static 'images/location-marker.jpg' %}" alt="locator marker" id="location-icon"/>#}
-                <p class="msg">Your Profile</p>
-                <a href="{% url 'mosques_near_me:profile' %}" class="btn btn-lg btn-outline-success" role="button" aria-pressed="true">User Profile</a>
+        <div class="menu-divs">
+               <h5>Your Favourite Mosques:</h5>
+                <ul>
+                {% for mosque in favourite_mosques %}
+                    <li>{{ mosque.mosque_name }}</li>
+                    {% empty %}
+                    <p>You don't have any mosques added to your favourites yet!</p>
+                {% endfor %}
+                </ul>
             </div>
         </div>
     {% endblock content %}
-
 </body>
 </html>
