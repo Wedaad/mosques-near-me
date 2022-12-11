@@ -17,6 +17,7 @@ urlpatterns = [
     path('update/', views.update_location, name="update_location"),
     path('findmosques/', views.find_mosque, name="findmosques"),
     path('addFavourites/', views.addFavouriteMosque, name="favouriteMosque"),
-    path('profile/', views.getFavouriteMosque, name="profile")
+    path('profile/', views.getFavouriteMosque, name="profile"),
+    path('prayertimes/', TemplateView.as_view(template_name="prayer_times.html"), name="prayertimes"),
 
 ]
