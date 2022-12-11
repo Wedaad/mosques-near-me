@@ -1,31 +1,39 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block content %}
+    {% load leaflet_tags %}
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
     <title>{% block title %}Map Page{% endblock %}</title>
 </head>
 <body>
-    {% block navbar %}
-    <nav class="navbar navbar-expand-md bg-info navbar-dark">
+     <nav class="navbar navbar-expand-md bg-info navbar-dark">
       <ul class="navbar-nav mr-auto">
-             {% if user.is_authenticated %}
-              <a class="navbar-brand" href="{% url 'mosques_near_me:menu' %}">Mosques Near Me</a>
+         {% if user.is_authenticated %}
+          <a class="navbar-brand" href="#">Find a Mosque</a>
 
-                 <li class="nav-item">
+             <li class="nav-item">
                      <a class="nav-link" href="{% url 'mosques_near_me:menu' %}">Menu</a>
-                 </li>
+             </li>
 
-                  <li class="nav-item">
-                     <a class="nav-link" href="{% url 'mosques_near_me:profile' %}">User Profile</a>
-                 </li>
+             <li class="nav-item">
+                 <a class="nav-link" href="{% url 'mosques_near_me:map' %}">Find Mosque</a>
+             </li>
 
-                 <li class="nav-item">
+             <li class="nav-item">
                      <a class="nav-link" href="{% url 'mosques_near_me:prayertimes' %}">Prayer Times</a>
-                 </li>
-      </ul>
+             </li>
+
+             <li class="nav-item">
+                     <a class="nav-link" href="{% url 'mosques_near_me:profile' %}">User Profile</a>
+             </li>
+
+             </ul>
              <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                      <a class="nav-link disabled" href="#" >Hello {{user.username}}!</a>
@@ -43,26 +51,22 @@
          {% endif %}
       </ul>
     </nav>
-    {% endblock %}
 
-    {% block content %}
-        {% load leaflet_tags %}
-
-        <h3 class="text-center m-3">Your Location</h3>
+        <h3 class="text-center m-3">Your Location & Nearby Mosques</h3>
 
         <form method="post" action="{% url 'mosques_near_me:update_location' %}">
             {% csrf_token %}
         </form>
 
         <div id='map'></div>
-    {% endblock %}
 
-    {% block javascript %}
         <script>
             let mosque_name = "";
             let mosque_address = "";
-            let mosque_lat = "";
-            let mosque_long = "";
+            let mosque_lat;
+            let mosque_long;
+            let userLat;
+            let userLong;
 
             map = L.map('map', {doubleClickZoom: false}).locate({setView: true, maxZoom: 16});
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -81,7 +85,8 @@
 
                  L.circle(e.latlng, radius).addTo(map);
 
-                {#console.log(lat + " " + long);#}
+                userLat = lat;
+                userLong = long;
                 updateLocation(location);
                 findMosque();
             }
@@ -135,6 +140,7 @@
 
             }
 
+            // finding a mosque
             function findMosque() {
                 console.log("In findMosque(): ");
                 let csrftoken = getCookie('csrftoken');
@@ -170,13 +176,13 @@
 
                         pointToLayer: function (feature, latlng) {
                             let marker = L.circleMarker(latlng, markerStyle);
-                            mosque_name = feature.properties.name;
+                            mosque_name = feature.properties.name
                             mosque_address = "" + feature.properties["addr:city"]
                             mosque_lat = "" + feature.geometry.coordinates[0]
                             mosque_long = "" + feature.geometry.coordinates[1]
                             marker.bindPopup("<h6>Mosque: </h6>" + "Name: " + feature.properties.name + "<br/>City: " + mosque_address + "<br/>" +
-                            '<br/><button id="add-favs" class="btn btn-primary" onclick=addToFavourites() ' +
-                                'type="submit">Add to Favourites</button>')
+                            '<br/><button id="add-favs" class="btn btn-primary bg-info" onclick=addToFavourites() ' +
+                                'type="submit">Add to Favourites</button></br></br><button class="btn btn-primary bg-info" onclick=viewPath()>View Path</button>')
                             return marker
                         },
                     }).addTo(map);
@@ -194,6 +200,7 @@
 
             }
 
+            // adding mosque to favourites
             function addToFavourites() {
 
                 console.log("inside addToFavourites() " + mosque_name + " " + mosque_address + " lat " + mosque_lat + " long " + mosque_long);
@@ -224,7 +231,22 @@
                 });
 
             }
+
+            {#viewPath()#}
+
+            function viewPath() {
+                console.log("Inside viewPath")
+                console.log("User: " + userLat + " " + userLong + " " + mosque_lat + " " + mosque_long)
+
+                L.Routing.control({
+                   waypoints: [
+                       L.latLng(userLat, userLong), // users location
+                       L.latLng(mosque_long, mosque_lat)  // the mosque clicked on location
+                   ],
+                    routeWhileDragging: false
+                }).addTo(map);
+            }
         </script>
-    {% endblock %}
+{% endblock %}
 </body>
 </html>
