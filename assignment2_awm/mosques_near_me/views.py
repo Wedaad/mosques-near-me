@@ -127,7 +127,6 @@ def find_mosque(request):
         nodes_in_way = []
 
         for way in result.ways:
-            print("hello")
             geojson_feature = {
 
                 "type": "Feature",
@@ -177,7 +176,7 @@ def find_mosque(request):
 
                     geojson_result["features"].append(geojson_feature)
 
-                return JsonResponse(geojson_result, status=200)
+        return JsonResponse(geojson_result, status=200)
     except Exception as e:
         return JsonResponse({"message": f"Error: {e}."}, status=400)
 
