@@ -29,6 +29,7 @@ def user_login(request):
                 redirect("mosques_near_me:home")
         else:
             redirect("mosques_near_me:home")
+            return render(request=request, template_name="user_registration/login.html", context={"login_form": form})
     else:
         form = AuthenticationForm()
         return render(request=request, template_name="user_registration/login.html", context={"login_form": form})
@@ -88,6 +89,8 @@ def find_mosque(request):
         api = overpy.Overpass()
         bounding_box = request.POST.get("bbox", None)
         print("BBOX: ", bounding_box)
+
+        # changing the bounding box to have the correct coords in the right place
         if bounding_box:
             bbox = bounding_box.split(",")
 
@@ -96,20 +99,20 @@ def find_mosque(request):
             bounding_box = mod_boundingbox
         print(bounding_box)
 
+        # query to find all the mosques within the bounding box of the map
         result = api.query(f"""
         [out:json];
         (
             node["amenity"="place_of_worship"]["religion"="muslim"]{tuple(bounding_box)};
             way["amenity"="place_of_worship"]["religion"="muslim"]{tuple(bounding_box)};
             relation["amenity"="place_of_worship"]["religion"="muslim"]{tuple(bounding_box)};
-     
         );
         out body;
         >;
         out skel qt;
         """)
 
-        # the amount of nodes (mosques) returned
+        # if no mosques are returned
         if len(result.nodes) == 0:
             return JsonResponse({"message": "There are no mosques near your location"})
 
@@ -124,6 +127,7 @@ def find_mosque(request):
         nodes_in_way = []
 
         for way in result.ways:
+            print("hello")
             geojson_feature = {
 
                 "type": "Feature",
@@ -137,43 +141,45 @@ def find_mosque(request):
                 nodes_in_way.append(node.id)
                 poly.append([float(node.lon), float(node.lat)])
 
-            try:
-                poly = Polygon(poly)
-            except:
-                continue
-
-            geojson_feature["id"] = f"way_{way.id}"
-            geojson_feature["geometry"] = json.loads(poly.centroid.geojson)
-            geojson_feature["properties"] = {}
-            for k, v in way.tags.items():
-                geojson_feature["properties"][k] = v
-
-            geojson_result["features"].append(geojson_feature)
-
-            for node in result.nodes:
-                if node.id in nodes_in_way:
+                try:
+                    poly = Polygon(poly)
+                except:
                     continue
 
-                geojson_feature = {
-                    "type": "Feature",
-                    "id": "",
-                    "geometry": "",
-                    "properties": {}
-                }
-
-                point = Point([float(node.lon), float(node.lat)])
-                geojson_feature["id"] = f"node_{node.id}"
-                geojson_feature["geometry"] = json.loads(point.geojson)
+                geojson_feature["id"] = f"way_{way.id}"
+                geojson_feature["geometry"] = json.loads(poly.centroid.geojson)
                 geojson_feature["properties"] = {}
-                for k, v in node.tags.items():
-                    geojson_feature["properties"][k] = v
 
-                geojson_result["features"].append(geojson_feature)
+                for k, v in way.tags.items():
+                    geojson_feature["properties"][k] = v
+                    # print(geojson_feature)
+
+                geojson_result["features"].append(geojson_feature) # adding all the information of the mosque to the geojson object
+
+                # looping over all the mosques returned in the query
+                for node in result.nodes:
+                    if node.id in nodes_in_way:
+                        continue
+
+                    geojson_feature = {
+                        "type": "Feature",
+                        "id": "",
+                        "geometry": "",
+                        "properties": {}
+                    }
+
+                    point = Point([float(node.lon), float(node.lat)])
+                    geojson_feature["id"] = f"node_{node.id}"
+                    geojson_feature["geometry"] = json.loads(point.geojson)
+                    geojson_feature["properties"] = {}
+                    for k, v in node.tags.items():
+                        geojson_feature["properties"][k] = v
+
+                    geojson_result["features"].append(geojson_feature)
 
                 return JsonResponse(geojson_result, status=200)
     except Exception as e:
         return JsonResponse({"message": f"Error: {e}."}, status=400)
-
 
 
 @login_required
@@ -181,10 +187,15 @@ def addFavouriteMosque(request):
 
     try:
         mosque_name = request.POST.get("mosqueName", None)
+        mosque_address = request.POST.get("mosqueCity", None)
+        latitude = request.POST.get("lat", None)
+        longitude = request.POST.get("long", None)
+        mosque_coords = [float(latitude), float(longitude)]
         print("Mosque: ", mosque_name)
         user = request.user
 
-        favourite_mosque = Mosques(mosque_name=mosque_name, mosque_goer=user)
+        favourite_mosque = Mosques(mosque_name=mosque_name, mosque_goer=user, location=mosque_address)
+        favourite_mosque.mosque_map_location = Point(mosque_coords, srid=4326)
         favourite_mosque.save()
         update_msg = f'{mosque_name} has been added to your list of favourite mosques'
 
@@ -194,7 +205,8 @@ def addFavouriteMosque(request):
         return JsonResponse({"Error": f"No mosque found near your area {e}"}, status=400)
 
 
-
+# View which retrieves the current users list of favourite mosques
+@login_required()
 def getFavouriteMosque(request):
     if request.method == "GET":
         favourite_mosque = Mosques.objects.filter(mosque_goer=request.user)
