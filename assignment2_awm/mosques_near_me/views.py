@@ -44,10 +44,9 @@ def register_user(request):
             new_user = form.save()
             username = request.POST.get('username')
             email = request.POST.get('email')
-            form.save()
             new_profile = UserProfile(user=new_user, username=username, email=email)
             new_profile.save()
-            return redirect("mosques_near_me:register_user")
+            return redirect("mosques_near_me:success")
         else:
             return redirect("mosques_near_me:home")
     else:
