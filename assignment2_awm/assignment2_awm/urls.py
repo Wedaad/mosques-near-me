@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-# from mosques_near_me import views
+
 
 urlpatterns = [
-    path('', include('mosques_near_me.urls', namespace='mosques_near_me')),
     path('admin/', admin.site.urls),
-    # path('register', views.register_user, name="register_user"),
+    path('', include('mosques_near_me.urls', namespace='mosques_near_me')),
+    path('', include('pwa.urls')),
+
 ]

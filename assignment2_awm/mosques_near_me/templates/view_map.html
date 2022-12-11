@@ -162,7 +162,7 @@
                 }).done(function (data, status, xhr) {
 
                     console.log(data);
-                    // Handle GeoJSON response from the server.
+
                     let markerStyle = {
                         radius: 20,
                         fillColor: "purple",
@@ -172,6 +172,7 @@
                         fillOpacity: 0.5
                     }
 
+                    // Handle GeoJSON response from the server
                     let geoJsonLayer = L.geoJson(data, {
 
                         pointToLayer: function (feature, latlng) {
@@ -187,7 +188,6 @@
                         },
                     }).addTo(map);
 
-                    // Add the GeoJSON layer to the cluster.
                     map.addLayer(geoJsonLayer);
 
                 }).fail(function (xhr, status, error) {
