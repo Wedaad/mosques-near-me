@@ -9,6 +9,7 @@ app_name = "mosques_near_me"
 urlpatterns = [
 
     path('register/', views.register_user, name='register_user'),
+    path('registersuccess/', TemplateView.as_view(template_name='user_registration/register_success.html'), name="success"),
     path('login/', views.user_login, name='login'),
     path('', TemplateView.as_view(template_name='index.html'), name="home"),
     path('logout/', TemplateView.as_view(template_name='user_registration/logout.html'), name='logout'),
