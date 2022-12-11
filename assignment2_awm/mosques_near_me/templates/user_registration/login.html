@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block content %}
 {% load crispy_forms_filters %}
 <!DOCTYPE html>
 <html lang="en">
@@ -8,7 +9,14 @@
     <title>{% block title %}User Login{% endblock %}</title>
 </head>
 <body>
-     {% block content %}
+         <nav class="navbar navbar-expand-md bg-info navbar-dark">
+              <ul class="navbar-nav mr-auto">
+                  <li class="nav-item">
+                       <a class="navbar-brand" href="#">Find a Mosque</a>
+                  </li>
+
+              </ul>
+        </nav>
          {% load crispy_forms_tags %}
          <h2 class="text-center m-3">Log In</h2>
             <div class="container py-5">

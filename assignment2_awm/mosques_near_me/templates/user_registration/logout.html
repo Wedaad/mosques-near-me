@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block content %}
 {% load crispy_forms_filters %}
 <!DOCTYPE html>
 <html lang="en">
@@ -7,30 +8,29 @@
     <title>{% block title %}User Logout{% endblock %}</title>
 </head>
 <body>
-  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-      <ul class="navbar-nav mr-auto">
-         {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link" href="#">Welcome, {{user.username}}</a>
-            </li>
-         {% else %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'login' %}">Login</a>
-             </li>
-         {% endif %}
-      </ul>
-     </nav>
+      <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+          <ul class="navbar-nav mr-auto">
+             {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Welcome, {{user.username}}</a>
+                </li>
+             {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                 </li>
+             {% endif %}
+          </ul>
+         </nav>
 
-    {% block content %}
-            <div class="container m-3">
-                <h4>Logging User out...</h4>
-                <p>Are you sure you want to logout?</p>
+      <div class="container m-3">
+          <h4>Logging User out...</h4>
+          <p>Are you sure you want to logout?</p>
 
-                <div class="d-flex justify-content-start">
-                    <p class="m-2"><a href="{% url 'mosques_near_me:home' %}">Logout</a></p>
-                    <p class="m-2"><a href="{% url 'mosques_near_me:menu' %}">Go back to menu</a></p>
-                </div>
-            </div>
+          <div class="d-flex justify-content-start">
+              <p class="m-2"><a href="{% url 'mosques_near_me:home' %}">Logout</a></p>
+              <p class="m-2"><a href="{% url 'mosques_near_me:menu' %}">Go back to menu</a></p>
+          </div>
+      </div>
 
     {% endblock %}
 </body>
