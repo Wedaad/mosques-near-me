@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,17 +8,25 @@
     <title>User Profile</title>
 </head>
 <body>
-{% block navbar %}
     <nav class="navbar navbar-expand-md bg-info navbar-dark">
       <ul class="navbar-nav mr-auto">
          {% if user.is_authenticated %}
           <a class="navbar-brand" href="#">Find a Mosque</a>
+
              <li class="nav-item">
-                 <a class="nav-link" href="{% url 'mosques_near_me:map' %}">View Map</a>
+                     <a class="nav-link" href="{% url 'mosques_near_me:menu' %}">Menu</a>
+             </li>
+
+             <li class="nav-item">
+                 <a class="nav-link" href="{% url 'mosques_near_me:map' %}">Find Mosque</a>
              </li>
 
              <li class="nav-item">
                      <a class="nav-link" href="{% url 'mosques_near_me:prayertimes' %}">Prayer Times</a>
+             </li>
+
+             <li class="nav-item">
+                     <a class="nav-link" href="{% url 'mosques_near_me:profile' %}">User Profile</a>
              </li>
 
              </ul>
@@ -38,9 +47,7 @@
          {% endif %}
       </ul>
     </nav>
-    {% endblock %}
 
-    {% block content %}
         <h2 class="text-center m-3">Your Profile</h2>
 
         <div class="div-container">

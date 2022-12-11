@@ -20,17 +20,15 @@
     {% leaflet_js %}
 </head>
 <body>
-    {% block navbar %}
-    <nav class="navbar navbar-expand-md bg-info navbar-dark">
-        <a class="navbar-brand" href="#">Find a Mosque</a>
-    </nav>
-    {% endblock %}
+{#    {% block navbar %}#}
+{#    <nav class="navbar navbar-expand-md bg-info navbar-dark">#}
+{#        <a class="navbar-brand" href="#">Mosques Near Me</a>#}
+{#    </nav>#}
+{#    {% endblock %}#}
     <main>
         {% block content %}
         {% endblock %}
 
-        {% block javascript %}
-        {% endblock %}
     </main>
 
     <footer class="bg-info text-center text-lg-start">
@@ -48,9 +46,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
             integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
             crossorigin="anonymous"></script>
-
-    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/"></script>
-<script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js"></script>
 
 </body>
 </html>
