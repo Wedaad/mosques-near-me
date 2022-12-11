@@ -8,13 +8,18 @@
 </head>
 <body>
 {% block navbar %}
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <nav class="navbar navbar-expand-md bg-info navbar-dark">
       <ul class="navbar-nav mr-auto">
          {% if user.is_authenticated %}
           <a class="navbar-brand" href="#">Find a Mosque</a>
              <li class="nav-item">
                  <a class="nav-link" href="{% url 'mosques_near_me:map' %}">View Map</a>
              </li>
+
+             <li class="nav-item">
+                     <a class="nav-link" href="{% url 'mosques_near_me:prayertimes' %}">Prayer Times</a>
+             </li>
+
              </ul>
              <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
@@ -40,8 +45,7 @@
 
         <div class="div-container">
             <div class="menu-divs">
-               <img src="{% static 'images/profile.png' %}" alt="profile picture place holder image" id="profile-icon"/>
-                <p class="msg">Your Profile</p>
+               <img src="{% static 'images/avatar.png' %}" alt="profile picture place holder image" id="profile-icon"/>
                 <p class="msg">Username: {{user.username}}</p>
             </div>
 

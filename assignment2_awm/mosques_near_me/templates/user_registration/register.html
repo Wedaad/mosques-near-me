@@ -14,7 +14,7 @@
             <form method="post" action="{% url 'mosques_near_me:register_user' %}">
                 {% csrf_token %}
                 {{ signup_form|crispy }}
-                <button type="submit" class="btn btn-primary">Register</button>
+                <button type="submit" class="btn" id="button-colors">Register</button>
             </form>
             <p class="text-center">Already have an account? <a href="{% url 'mosques_near_me:login' %}">Login Here</a></p>
         </div>

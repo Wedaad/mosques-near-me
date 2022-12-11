@@ -3,23 +3,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>{% block title %}User Logout{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <meta charset="UTF-8">
+    <title>Prayer Times</title>
 </head>
 <body>
-    {% block navbar %}
+{% block navbar %}
     <nav class="navbar navbar-expand-md bg-info navbar-dark">
       <ul class="navbar-nav mr-auto">
          {% if user.is_authenticated %}
           <a class="navbar-brand" href="#">Find a Mosque</a>
              <li class="nav-item">
-                 <a class="nav-link" href="{% url 'mosques_near_me:map' %}">Find a Mosque</a>
+                 <a class="nav-link" href="{% url 'mosques_near_me:map' %}">View Map</a>
              </li>
 
              <li class="nav-item">
-                     <a class="nav-link" href="{% url 'mosques_near_me:prayertimes' %}">Prayer Times</a>
-                 </li>
+                 <a class="nav-link" href="{% url 'mosques_near_me:prayertimes' %}">Prayer Times</a>
+             </li>
+
+             <li class="nav-item">
+                 <a class="nav-link" href="{% url 'mosques_near_me:profile' %}">User Profile</a>
+             </li>
              </ul>
              <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
@@ -41,23 +44,18 @@
     {% endblock %}
 
     {% block content %}
-        <h2 class="text-center m-3">Find a Mosque Near You - Main Menu</h2>
-        <p class="msg text-center">Welcome, {{user.username}}</p>
+        <h2 class="text-center m-3">Prayer Times</h2>
 
         <div class="div-container">
             <div class="menu-divs">
-                <img src="{% static 'images/mosque2.png' %}" alt="locator marker" id="icon-style"/>
-                <p class="msg">View map and find some local mosques!</p>
-                <a href="{% url 'mosques_near_me:map' %}" class="btn" role="button" aria-pressed="true" id="button-colors">Find a Mosque</a>
+               <img src="{% static 'images/prayer-mat.png' %}" alt="prayer-mat"/>
             </div>
 
             <div class="menu-divs">
-                <img src="{% static 'images/profile-avatar.png' %}" alt="locator marker" id="icon-style"/>
-                <p class="msg">Your Profile</p>
-                <a href="{% url 'mosques_near_me:profile' %}" class="btn" role="button" aria-pressed="true" id="button-colors">User Profile</a>
+              <iframe style="width: 500px; height: 400px; border: 1px solid #ddd;" src="https://www.islamicfinder.org/prayer-widget/"> </iframe>
             </div>
+
         </div>
     {% endblock content %}
-
 </body>
 </html>

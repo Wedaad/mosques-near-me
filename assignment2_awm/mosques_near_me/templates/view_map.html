@@ -9,13 +9,21 @@
 </head>
 <body>
     {% block navbar %}
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <nav class="navbar navbar-expand-md bg-info navbar-dark">
       <ul class="navbar-nav mr-auto">
              {% if user.is_authenticated %}
-              <a class="navbar-brand" href="{% url 'mosques_near_me:menu' %}">AWM Locator App</a>
+              <a class="navbar-brand" href="{% url 'mosques_near_me:menu' %}">Mosques Near Me</a>
 
                  <li class="nav-item">
                      <a class="nav-link" href="{% url 'mosques_near_me:menu' %}">Menu</a>
+                 </li>
+
+                  <li class="nav-item">
+                     <a class="nav-link" href="{% url 'mosques_near_me:profile' %}">User Profile</a>
+                 </li>
+
+                 <li class="nav-item">
+                     <a class="nav-link" href="{% url 'mosques_near_me:prayertimes' %}">Prayer Times</a>
                  </li>
       </ul>
              <ul class="navbar-nav ml-auto">
@@ -52,6 +60,10 @@
     {% block javascript %}
         <script>
             let mosque_name = "";
+            let mosque_address = "";
+            let mosque_lat = "";
+            let mosque_long = "";
+
             map = L.map('map', {doubleClickZoom: false}).locate({setView: true, maxZoom: 16});
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -159,10 +171,14 @@
                         pointToLayer: function (feature, latlng) {
                             let marker = L.circleMarker(latlng, markerStyle);
                             mosque_name = feature.properties.name;
-                            marker.bindPopup("<h6>Mosque: </h6>" + feature.properties.name +
-                            '<br/><button id="add-favs" class="btn btn-primary" onclick=addToFavourites(mosque_name) type="submit">Add to Favourites</button>')
+                            mosque_address = "" + feature.properties["addr:city"]
+                            mosque_lat = "" + feature.geometry.coordinates[0]
+                            mosque_long = "" + feature.geometry.coordinates[1]
+                            marker.bindPopup("<h6>Mosque: </h6>" + "Name: " + feature.properties.name + "<br/>City: " + mosque_address + "<br/>" +
+                            '<br/><button id="add-favs" class="btn btn-primary" onclick=addToFavourites() ' +
+                                'type="submit">Add to Favourites</button>')
                             return marker
-                        }
+                        },
                     }).addTo(map);
 
                     // Add the GeoJSON layer to the cluster.
@@ -178,9 +194,9 @@
 
             }
 
-            function addToFavourites(mosque_name) {
+            function addToFavourites() {
 
-                console.log("inside addToFavourites() " + mosque_name);
+                console.log("inside addToFavourites() " + mosque_name + " " + mosque_address + " lat " + mosque_lat + " long " + mosque_long);
                 let csrftoken = getCookie('csrftoken');
 
                 $.ajax({
@@ -192,7 +208,10 @@
                     url: '{% url 'mosques_near_me:favouriteMosque' %}',
                     data: {
 
-                        mosqueName: mosque_name
+                        mosqueName: mosque_name,
+                        mosqueCity: mosque_address,
+                        lat: mosque_lat,
+                        long: mosque_long
                     }
                 }).done(function (data, status, xhr) {
                     console.log(data["message"])
