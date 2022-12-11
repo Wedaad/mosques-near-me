@@ -180,7 +180,7 @@
                             mosque_address = "" + feature.properties["addr:city"]
                             mosque_lat = "" + feature.geometry.coordinates[0]
                             mosque_long = "" + feature.geometry.coordinates[1]
-                            marker.bindPopup("<h6>Mosque: </h6>" + "Name: " + feature.properties.name + "<br/>City: " + mosque_address + "<br/>" +
+                            marker.bindPopup("<h6>Mosque: </h6>" + "Name: " + mosque_name + "<br/>City: " + mosque_address + "<br/>" +
                             '<br/><button id="add-favs" class="btn btn-primary bg-info" onclick=addToFavourites() ' +
                                 'type="submit">Add to Favourites</button></br></br><button class="btn btn-primary bg-info" onclick=viewPath()>View Path</button>')
                             return marker
@@ -197,7 +197,6 @@
                 }).always(function () {
                     {#toggleCentredSpinner("hide");#}
                 });
-
             }
 
             // adding mosque to favourites
