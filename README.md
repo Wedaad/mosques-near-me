@@ -49,7 +49,8 @@ Displaying multiple Mosques with purple markers:
  ![route-to-mosque](https://user-images.githubusercontent.com/57072598/206944341-cdf459c5-63a0-48db-8eb6-d881552f0283.jpg)
 
  Favourite Mosques in the database:
- ![route-to-mosque](https://user-images.githubusercontent.com/57072598/206944363-65acbacc-01c7-4638-909c-267e66bd39b1.jpg)
+![image](https://user-images.githubusercontent.com/57072598/207154562-8cf648cb-7be7-4c38-9e7d-a6a2a81f2fde.png)
+
 
 Plotting users favourite mosque in Django Admin website:
 ![image](https://user-images.githubusercontent.com/57072598/206944990-dddcd6a4-a7e5-4f21-a4fd-eedd3ce1925c.png)
